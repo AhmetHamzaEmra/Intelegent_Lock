@@ -22,5 +22,5 @@ python3 main_code.py
 
 ## To do: 
 
-* Imporve liveness detection ( I need bigger data set)
+* Imporve liveness detection (bigger data set needed)
 * Deploy it to IoT 
