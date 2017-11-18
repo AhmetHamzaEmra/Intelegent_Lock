@@ -81,6 +81,11 @@ while True:
 
         process_this_frame = not process_this_frame
 
+        unlock = False
+        for n in face_names:
+
+            if n != 'Unknown':
+                unlock=True
 
         # Display the results
         for (top, right, bottom, left), name in zip(face_locations, face_names):
@@ -97,7 +102,8 @@ while True:
             cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
             
             cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-            cv2.putText(frame, 'UNLOCK', (frame.shape[1]//2, frame.shape[0]//2), font, 1.0, (255, 255, 255), 1)
+            if unlock:
+                cv2.putText(frame, 'UNLOCK', (frame.shape[1]//2, frame.shape[0]//2), font, 1.0, (255, 255, 255), 1)
 
     else:
         cv2.putText(frame, 'WARNING!', (frame.shape[1]//2, frame.shape[0]//2), font, 1.0, (255, 255, 255), 1)
