@@ -18,6 +18,7 @@ pip3 install tflearn, face_recognition, opencv-python
 python3 main_code.py
 ```
 
+![](https://github.com/AhmetHamzaEmra/Intelegent_Lock/blob/master/a.gif)
 
 
 ## To do: 
