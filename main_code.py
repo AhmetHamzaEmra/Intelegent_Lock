@@ -53,7 +53,7 @@ while True:
     liveimg = liveimg.reshape((-1,100,100,1))
     pred = model.predict(liveimg)
 
-    if pred[0][0]> .995:
+    if pred[0][0]> .90:
 
 
 
@@ -72,6 +72,7 @@ while True:
                 for ii in range(len(known_encods)):
                     # See if the face is a match for the known face(s)
                     match = face_recognition.compare_faces([known_encods[ii]], face_encoding)
+
                     
 
                     if match[0]:
@@ -104,6 +105,10 @@ while True:
             cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
             if unlock:
                 cv2.putText(frame, 'UNLOCK', (frame.shape[1]//2, frame.shape[0]//2), font, 1.0, (255, 255, 255), 1)
+            else:
+                cv2.putText(frame, 'LOCKED!', (frame.shape[1]//2, frame.shape[0]//2), font, 1.0, (255, 255, 255), 1)
+            
+
 
     else:
         cv2.putText(frame, 'WARNING!', (frame.shape[1]//2, frame.shape[0]//2), font, 1.0, (255, 255, 255), 1)
