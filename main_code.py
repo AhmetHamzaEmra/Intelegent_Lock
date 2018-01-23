@@ -53,7 +53,7 @@ while True:
     liveimg = liveimg.reshape((-1,100,100,1))
     pred = model.predict(liveimg)
 
-    if pred[0][0]> .90:
+    if pred[0][0]> .40:
 
 
 
