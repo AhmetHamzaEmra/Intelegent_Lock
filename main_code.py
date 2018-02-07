@@ -2,28 +2,90 @@
 import face_recognition
 import cv2
 import numpy as np 
-
+font = cv2.FONT_HERSHEY_DUPLEX
 import tflearn
 from tflearn.layers.core import input_data, dropout, fully_connected
 from tflearn.layers.conv import conv_2d, max_pool_2d, avg_pool_2d
 from tflearn.layers.normalization import local_response_normalization
 from tflearn.layers.estimator import regression
+from sklearn.preprocessing import OneHotEncoder
+from os import listdir
+from os.path import isfile, join
 
-font = cv2.FONT_HERSHEY_DUPLEX
-# Building convolutional network
-network = input_data(shape=[None, 100, 100, 1], name='input')
-network = conv_2d(network, 32, 5, activation='relu')
-network = avg_pool_2d(network, 2)
-network = conv_2d(network, 64, 5, activation='relu')
-network = avg_pool_2d(network, 2)
-network = fully_connected(network, 128, activation='relu')
-network = fully_connected(network, 64, activation='relu')
-network = fully_connected(network, 2, activation='softmax')
-network = regression(network, optimizer='adam', learning_rate=0.001,
-                     loss='categorical_crossentropy', name='target')
 
-model = tflearn.DNN(network, tensorboard_verbose=0)
-model.load('model/my_model.tflearn')
+live_img = ["liveness_detection/img-live/"+f for f in listdir("liveness_detection/img-live/") if isfile(join("liveness_detection/img-live/", f))]
+live_label = [0 for i in range(len(live_img))]
+
+
+not_live_img = ["liveness_detection/img-not-live/" + f for f in listdir("liveness_detection/img-not-live/") if isfile(join("liveness_detection/img-not-live/", f))]
+not_live_label = [1 for i in range(len(not_live_img))]
+print(live_img)
+
+if live_img != [] and not_live_img != []:
+
+    print("Liveness Model finetuning!")
+    img = live_img + not_live_img
+    labels = live_label+ not_live_label
+    images=[]
+    for i in img:
+        img = cv2.imread(i, 0)
+        img = cv2.resize(img, (100,100))
+        images.append(img)
+
+    X = np.array(images, dtype=float)
+    y = np.array(labels, dtype=float)
+    y= y.reshape((-1,1))
+    X = X.reshape((-1,100,100,1))
+    X /= 255
+    Oneencoder = OneHotEncoder()
+    y = Oneencoder.fit_transform(y)
+    print("Data is ready!")
+    print("Training is starting!")
+
+    # Building convolutional network
+    network = input_data(shape=[None, 100, 100, 1], name='input')
+    network = conv_2d(network, 32, 5, activation='relu')
+    network = avg_pool_2d(network, 2)
+    network = conv_2d(network, 64, 5, activation='relu')
+    network = avg_pool_2d(network, 2)
+    network = fully_connected(network, 128, activation='relu')
+    network = fully_connected(network, 64, activation='relu')
+    network = fully_connected(network, 2, activation='softmax',restore=False)
+    network = regression(network, optimizer='adam', learning_rate=0.0001,
+                         loss='categorical_crossentropy', name='target')
+
+    model = tflearn.DNN(network, tensorboard_verbose=0)
+    model.load('model/my_model.tflearn')
+    model.fit(X, y.toarray(), n_epoch=3, validation_set=0.1, shuffle=True,
+          show_metric=True, batch_size=32, snapshot_step=100,
+          snapshot_epoch=False, run_id='model_finetuning')
+
+    model.save('model/my_model.tflearn')
+
+    print("Finetuning is DONE!")
+    print("Liveness Model is ready!")
+
+else:
+    
+    # Building convolutional network
+    network = input_data(shape=[None, 100, 100, 1], name='input')
+    network = conv_2d(network, 32, 5, activation='relu')
+    network = avg_pool_2d(network, 2)
+    network = conv_2d(network, 64, 5, activation='relu')
+    network = avg_pool_2d(network, 2)
+    network = fully_connected(network, 128, activation='relu')
+    network = fully_connected(network, 64, activation='relu')
+    network = fully_connected(network, 2, activation='softmax')
+    network = regression(network, optimizer='adam', learning_rate=0.001,
+                         loss='categorical_crossentropy', name='target')
+
+    model = tflearn.DNN(network, tensorboard_verbose=0)
+    model.load('model/my_model.tflearn')
+    print("Liveness Model is ready!")
+
+
+  
+
 
 
 video_capture = cv2.VideoCapture(0)
@@ -53,7 +115,7 @@ while True:
     liveimg = liveimg.reshape((-1,100,100,1))
     pred = model.predict(liveimg)
 
-    if pred[0][0]> .40:
+    if pred[0][0]> .70:
 
 
 
