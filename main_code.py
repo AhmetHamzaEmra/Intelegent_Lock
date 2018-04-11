@@ -60,7 +60,8 @@ if live_img != [] and not_live_img != []:
           show_metric=True, batch_size=32, snapshot_step=100,
           snapshot_epoch=False, run_id='model_finetuning')
 
-    model.save('model/my_model.tflearn')
+    # # uncomment this part if you want to save finetuned model
+    # model.save('model/my_model.tflearn')
 
     print("Finetuning is DONE!")
     print("Liveness Model is ready!")
@@ -115,7 +116,7 @@ while True:
     liveimg = liveimg.reshape((-1,100,100,1))
     pred = model.predict(liveimg)
 
-    if pred[0][0]> .70:
+    if pred[0][0]> .75:
 
 
 
