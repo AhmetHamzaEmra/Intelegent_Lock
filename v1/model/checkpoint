@@ -1,0 +1,2 @@
+model_checkpoint_path: "/Users/ahmethamzaemra/Documents/github/Intelegent_Lock/model/my_model.tflearn"
+all_model_checkpoint_paths: "/Users/ahmethamzaemra/Documents/github/Intelegent_Lock/model/my_model.tflearn"
