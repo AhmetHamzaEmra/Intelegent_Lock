@@ -17,7 +17,7 @@ live_img = ["liveness_detection/img-live/"+f for f in listdir("liveness_detectio
 live_label = [0 for i in range(len(live_img))]
 
 
-not_live_img = ["liveness_detection/img-not-live/" + f for f in listdir("liveness_detection/ß/") if isfile(join("liveness_detection/img-not-live/", f))]
+not_live_img = ["liveness_detection/img-not-live/" + f for f in listdir("liveness_detection/img-not-live/") if isfile(join("liveness_detection/img-not-live/", f))]
 not_live_label = [1 for i in range(len(not_live_img))]
 print(live_img)
 
