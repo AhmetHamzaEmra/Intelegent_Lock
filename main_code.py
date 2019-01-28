@@ -2,52 +2,22 @@
 import face_recognition
 import cv2
 import numpy as np 
-import keras
-from keras.models import model_from_json
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv3D, MaxPooling3D
-from keras import backend as K
-from os import listdir
-from os.path import isfile, join
-from glob import glob
+from livenessmodel import get_liveness_model
+from common import get_users
 font = cv2.FONT_HERSHEY_DUPLEX
 
-
-model = Sequential()
-model.add(Conv3D(32, kernel_size=(3, 3, 3),
-                 activation='relu',
-                 input_shape=(24,100,100,1)))
-model.add(Conv3D(64, (3, 3, 3), activation='relu'))
-model.add(MaxPooling3D(pool_size=(2, 2, 2)))
-model.add(Conv3D(64, (3, 3, 3), activation='relu'))
-model.add(MaxPooling3D(pool_size=(2, 2, 2)))
-model.add(Conv3D(64, (3, 3, 3), activation='relu'))
-model.add(MaxPooling3D(pool_size=(2, 2, 2)))
-model.add(Dropout(0.25))
-model.add(Flatten())
-model.add(Dense(128, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(2, activation='softmax'))
+# Get the liveness network
+model = get_liveness_model()
 
 # load weights into new model
 model.load_weights("model/model.h5")
 print("Loaded model from disk")
 
-
-
-known_names=[]
-known_encods=[]
-
-for i in glob("people/*.jpg"):
-    img = face_recognition.load_image_file(i)
-    encoding = face_recognition.face_encodings(img)[0]
-    known_encods.append(encoding)
-    known_names.append(i[7:-4])
+# Read the users data and create face encodings 
+known_names, known_encods = get_users()
 
 
 video_capture = cv2.VideoCapture(0)
-
 video_capture.set(3, 640)
 video_capture.set(4, 480)
 
@@ -81,9 +51,6 @@ while True:
 
         if pred[0][0]> .95:
 
-
-
-
             # Resize frame of video to 1/4 size for faster face recognition processing
             small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
@@ -98,8 +65,6 @@ while True:
                     for ii in range(len(known_encods)):
                         # See if the face is a match for the known face(s)
                         match = face_recognition.compare_faces([known_encods[ii]], face_encoding)
-
-                        
 
                         if match[0]:
                             name = known_names[ii]
