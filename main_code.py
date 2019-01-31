@@ -100,7 +100,9 @@ while True:
                     cv2.putText(frame, 'LOCKED!', (frame.shape[1]//2, frame.shape[0]//2), font, 1.0, (255, 255, 255), 1)
         else:
             cv2.putText(frame, 'WARNING!', (frame.shape[1]//2, frame.shape[0]//2), font, 1.0, (255, 255, 255), 1)
-            # Display the resulting image
+        # Display the liveness score in top left corner     
+        cv2.putText(frame, str(pred[0][0]), (20, 20), font, 1.0, (255, 255, 0), 1)
+        # Display the resulting image
         cv2.imshow('Video', frame)
 
         # Hit 'q' on the keyboard to quit!
